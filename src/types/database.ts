@@ -1,4 +1,4 @@
-// ─── Database Types (matching Supabase schema) ─────────────────────────────
+// ─── Database Types (matching Firebase Firestore schema) ─────────────────────────────
 
 export interface Profile {
   id: string;

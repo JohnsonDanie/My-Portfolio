@@ -19,7 +19,7 @@ export default function Footer() {
           </div>
 
           <p className="text-sm flex items-center gap-2" style={{ color: '#374151' }}>
-            Built with <Heart size={13} style={{ color: '#fb7185' }} fill="#fb7185" /> using React, TypeScript & Supabase
+            Built with <Heart size={13} style={{ color: '#fb7185' }} fill="#fb7185" /> using React, TypeScript & Firebase
           </p>
 
           <div className="flex items-center gap-4">

@@ -1,10 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import type { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { User, onAuthStateChanged, signInWithEmailAndPassword, sendSignInLinkToEmail, signOut as firebaseSignOut } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   loading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signInWithMagicLink: (email: string) => Promise<void>;
@@ -15,50 +14,44 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!supabase) {
+    if (!auth) {
       setLoading(false);
       return;
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!supabase) throw new Error('Supabase is not configured.');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (!auth) throw new Error('Firebase Auth is not configured.');
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signInWithMagicLink = async (email: string) => {
-    if (!supabase) throw new Error('Supabase is not configured.');
-    const { error } = await supabase.auth.signInWithOtp({ email });
-    if (error) throw error;
+    if (!auth) throw new Error('Firebase Auth is not configured.');
+    const actionCodeSettings = {
+      url: window.location.origin + '/admin',
+      handleCodeInApp: true,
+    };
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', email);
   };
 
   const signOut = async () => {
-    if (!supabase) throw new Error('Supabase is not configured.');
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (!auth) throw new Error('Firebase Auth is not configured.');
+    await firebaseSignOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signInWithEmail, signInWithMagicLink, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithEmail, signInWithMagicLink, signOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -69,4 +62,3 @@ export function useAuth() {
   if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 }
-

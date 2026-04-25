@@ -1,50 +1,65 @@
-import { supabase } from '../lib/supabase';
+import { db } from '../lib/firebase';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore';
 import type { BlogPost } from '../types/database';
 import { placeholderBlogPosts } from '../data/placeholder';
 
 export const blogService = {
   async getPublished(): Promise<BlogPost[]> {
-    if (!supabase) return placeholderBlogPosts.filter(p => p.published);
-    const { data, error } = await supabase
-      .from('blog_posts').select('*').eq('published', true).order('created_at', { ascending: false });
-    if (error) return placeholderBlogPosts.filter(p => p.published);
-    return data;
+    if (!db) return placeholderBlogPosts.filter(p => p.published);
+    try {
+      const q = query(collection(db, 'blog_posts'), where('published', '==', true), orderBy('created_at', 'desc'));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) return placeholderBlogPosts.filter(p => p.published);
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+    } catch {
+      return placeholderBlogPosts.filter(p => p.published);
+    }
   },
 
   async getAll(): Promise<BlogPost[]> {
-    if (!supabase) return placeholderBlogPosts;
-    const { data, error } = await supabase
-      .from('blog_posts').select('*').order('created_at', { ascending: false });
-    if (error) return placeholderBlogPosts;
-    return data;
+    if (!db) return placeholderBlogPosts;
+    try {
+      const q = query(collection(db, 'blog_posts'), orderBy('created_at', 'desc'));
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+    } catch {
+      return placeholderBlogPosts;
+    }
   },
 
   async getBySlug(slug: string): Promise<BlogPost | null> {
-    if (!supabase) return placeholderBlogPosts.find(p => p.slug === slug) || null;
-    const { data, error } = await supabase
-      .from('blog_posts').select('*').eq('slug', slug).single();
-    if (error) return null;
-    return data;
+    if (!db) return placeholderBlogPosts.find(p => p.slug === slug) || null;
+    try {
+      const q = query(collection(db, 'blog_posts'), where('slug', '==', slug));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) return null;
+      return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost;
+    } catch {
+      return null;
+    }
   },
 
   async create(post: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>): Promise<BlogPost> {
-    const { data, error } = await supabase
-      .from('blog_posts').insert([{ ...post, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }])
-      .select().single();
-    if (error) throw error;
-    return data;
+    if (!db) throw new Error('Firebase is not configured');
+    const docRef = await addDoc(collection(db, 'blog_posts'), { 
+      ...post, 
+      created_at: new Date().toISOString(), 
+      updated_at: new Date().toISOString() 
+    });
+    const newDoc = await getDoc(docRef);
+    return { id: newDoc.id, ...newDoc.data() } as BlogPost;
   },
 
   async update(id: string, updates: Partial<BlogPost>): Promise<BlogPost> {
-    const { data, error } = await supabase
-      .from('blog_posts').update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id).select().single();
-    if (error) throw error;
-    return data;
+    if (!db) throw new Error('Firebase is not configured');
+    const docRef = doc(db, 'blog_posts', id);
+    await updateDoc(docRef, { ...updates, updated_at: new Date().toISOString() });
+    const updated = await getDoc(docRef);
+    return { id: updated.id, ...updated.data() } as BlogPost;
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('blog_posts').delete().eq('id', id);
-    if (error) throw error;
+    if (!db) throw new Error('Firebase is not configured');
+    await deleteDoc(doc(db, 'blog_posts', id));
   },
 };

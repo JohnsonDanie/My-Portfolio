@@ -3,6 +3,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Mail, ArrowRight, Loader2, Code2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { auth } from '../../lib/firebase';
+import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
   const { user, signInWithMagicLink } = useAuth();
@@ -18,6 +21,27 @@ export default function LoginPage() {
   if (user) {
     return <Navigate to={from} replace />;
   }
+
+  useEffect(() => {
+    if (auth && isSignInWithEmailLink(auth, window.location.href)) {
+      let emailForSignIn = window.localStorage.getItem('emailForSignIn');
+      if (!emailForSignIn) {
+        emailForSignIn = window.prompt('Please provide your email for confirmation');
+      }
+      if (emailForSignIn) {
+        setLoading(true);
+        signInWithEmailLink(auth, emailForSignIn, window.location.href)
+          .then(() => {
+            window.localStorage.removeItem('emailForSignIn');
+            navigate(from, { replace: true });
+          })
+          .catch((err) => {
+            setError(err.message || 'Error signing in with link');
+            setLoading(false);
+          });
+      }
+    }
+  }, [navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

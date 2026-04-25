@@ -1,6 +1,6 @@
 import type { Profile, Project, Skill, Experience, BlogPost, Testimonial } from '../types/database';
 
-// ─── PLACEHOLDER DATA (used when Supabase is not configured) ────────────────
+// ─── PLACEHOLDER DATA (used when Firebase is not configured) ────────────────
 
 export const placeholderProfile: Profile = {
   id: '1',
