@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Mail, ArrowRight, Loader2, Code2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { auth } from '../../lib/firebase';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
-import { useEffect } from 'react';
 
 export default function LoginPage() {
   const { user, signInWithMagicLink } = useAuth();
@@ -18,10 +17,7 @@ export default function LoginPage() {
 
   const from = location.state?.from?.pathname || '/admin';
 
-  if (user) {
-    return <Navigate to={from} replace />;
-  }
-
+  // ✅ ALL hooks must be called before any early returns
   useEffect(() => {
     if (auth && isSignInWithEmailLink(auth, window.location.href)) {
       let emailForSignIn = window.localStorage.getItem('emailForSignIn');
@@ -42,6 +38,11 @@ export default function LoginPage() {
       }
     }
   }, [navigate, from]);
+
+  // ✅ Conditional return AFTER all hooks
+  if (user) {
+    return <Navigate to={from} replace />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
