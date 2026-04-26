@@ -50,7 +50,7 @@ export default function BlogManager() {
     const payload = { ...data, tags };
 
     if (editingPost) {
-      updatePost({ id: editingPost.id, post: payload }, { onSuccess: closeModal });
+      updatePost({ id: editingPost.id, updates: payload }, { onSuccess: closeModal });
     } else {
       createPost(payload, { onSuccess: closeModal });
     }

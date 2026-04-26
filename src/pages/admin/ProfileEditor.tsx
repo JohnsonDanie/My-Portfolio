@@ -13,12 +13,28 @@ export default function ProfileEditor() {
 
   useEffect(() => {
     if (profile) {
-      reset(profile);
+      reset({
+        ...profile,
+        impact_metrics: JSON.stringify(profile.impact_metrics || [], null, 2),
+        philosophy: JSON.stringify(profile.philosophy || [], null, 2),
+        fun_facts: (profile.fun_facts || []).join('\n'),
+      } as any);
     }
   }, [profile, reset]);
 
-  const onSubmit = (data: Profile) => {
-    updateProfile(data);
+  const onSubmit = (data: any) => {
+    try {
+      const payload = {
+        ...data,
+        yoe: Number(data.yoe),
+        impact_metrics: typeof data.impact_metrics === 'string' ? JSON.parse(data.impact_metrics) : data.impact_metrics,
+        philosophy: typeof data.philosophy === 'string' ? JSON.parse(data.philosophy) : data.philosophy,
+        fun_facts: typeof data.fun_facts === 'string' ? data.fun_facts.split('\n').filter(Boolean) : data.fun_facts,
+      };
+      updateProfile({ id: profile!.id, updates: payload });
+    } catch (e) {
+      alert('Invalid JSON in one of the fields. Please check your syntax.');
+    }
   };
 
   if (isLoading) {
@@ -130,6 +146,41 @@ export default function ProfileEditor() {
               type="url"
               {...register('resume_url')}
             />
+            <FormInput
+              label="Years of Experience"
+              type="number"
+              {...register('yoe', { valueAsNumber: true })}
+            />
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-indigo-500/10">
+            <h3 className="text-sm font-semibold text-white">Advanced Profile Data</h3>
+            
+            <FormTextarea
+              label="Impact Metrics (JSON Array)"
+              {...register('impact_metrics')}
+              placeholder='[{"label": "Projects", "value": "30+"}]'
+              rows={4}
+              className="font-mono text-xs"
+            />
+
+            <FormTextarea
+              label="Engineering Philosophy (JSON Array)"
+              {...register('philosophy')}
+              placeholder='[{"title": "Simplicity", "body": "..."}]'
+              rows={6}
+              className="font-mono text-xs"
+            />
+
+            <FormTextarea
+              label="Fun Facts (One per line)"
+              {...register('fun_facts')}
+              placeholder="Ex-guitar player..."
+              rows={4}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormInput
               label="Calendar URL"
               type="url"

@@ -4,18 +4,7 @@ import { Terminal, Download, ArrowDown, Zap, MapPin, Mail } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from '../Icons';
 import { useProfile } from '../../hooks';
 
-const codeLines = [
-  { text: 'const engineer = {', color: '#e2e8f0' },
-  { text: '  name: "Daniel Johnson",', color: '#a78bfa' },
-  { text: '  role: "Junior Software Engineer",', color: '#34d399' },
-  { text: '  focus: ["Distributed Systems",', color: '#22d3ee' },
-  { text: '          "Cloud Architecture",', color: '#22d3ee' },
-  { text: '          "Engineering Leadership"],', color: '#22d3ee' },
-  { text: '  impact: "50M+ events/day →", ', color: '#fbbf24' },
-  { text: '  yoe: 3,', color: '#818cf8' },
-  { text: '  open_to_work: true ✓', color: '#34d399' },
-  { text: '};', color: '#e2e8f0' },
-];
+
 
 function useScrollReveal() {
   useEffect(() => {
@@ -36,7 +25,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setVisibleLines(v => v < codeLines.length ? v + 1 : v);
+      setVisibleLines(v => v < dynamicCodeLines.length ? v + 1 : v);
     }, 200);
     return () => clearInterval(timer);
   }, []);
@@ -70,6 +59,19 @@ export default function HeroSection() {
   const resume = profile?.resume_url || '#';
   const email = profile?.email || '';
 
+  const dynamicCodeLines = [
+    { text: 'const engineer = {', color: '#e2e8f0' },
+    { text: `  name: "${name}",`, color: '#a78bfa' },
+    { text: `  role: "${title}",`, color: '#34d399' },
+    { text: '  focus: ["Distributed Systems",', color: '#22d3ee' },
+    { text: '          "Cloud Architecture",', color: '#22d3ee' },
+    { text: '          "Engineering Leadership"],', color: '#22d3ee' },
+    { text: `  impact: "${profile?.impact_metrics?.[0]?.value || '50M+'} events/day →", `, color: '#fbbf24' },
+    { text: `  yoe: ${profile?.yoe || 3},`, color: '#818cf8' },
+    { text: `  open_to_work: ${status === 'open'} ✓`, color: '#34d399' },
+    { text: '};', color: '#e2e8f0' },
+  ];
+
   const statusConfig = {
     open: { label: 'Open to Work', color: '#34d399', bg: 'rgba(52, 211, 153, 0.1)' },
     busy: { label: 'Not Available', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
@@ -94,7 +96,7 @@ export default function HeroSection() {
         style={{
           background: `radial-gradient(ellipse at ${20 + mousePos.x * 8}% ${15 + mousePos.y * 8}%, rgba(99,102,241,0.13) 0%, transparent 55%),
                        radial-gradient(ellipse at ${80 - mousePos.x * 6}% ${70 - mousePos.y * 6}%, rgba(6,182,212,0.08) 0%, transparent 50%)`,
-          transition: 'background 0.6s ease',
+          transition: 'background 0.3s ease',
           willChange: 'background',
         }}
       />
@@ -219,7 +221,7 @@ export default function HeroSection() {
             {/* Code Lines */}
             <div className="p-6" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: '1.9' }}>
               <AnimatePresence>
-                {codeLines.slice(0, visibleLines).map((line, i) => (
+                {dynamicCodeLines.slice(0, visibleLines).map((line, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, x: -8 }}
@@ -234,7 +236,7 @@ export default function HeroSection() {
                   </motion.div>
                 ))}
               </AnimatePresence>
-              {visibleLines < codeLines.length && (
+              {visibleLines < dynamicCodeLines.length && (
                 <div className="flex">
                   <span style={{ color: '#374151', marginRight: '1.5rem', minWidth: '1.5rem', textAlign: 'right', fontSize: '0.75rem' }}>
                     {visibleLines + 1}
@@ -246,11 +248,11 @@ export default function HeroSection() {
 
             {/* Stats bar */}
             <div className="grid grid-cols-3 divide-x" style={{ borderTop: '1px solid rgba(99,102,241,0.15)', borderColor: 'rgba(99,102,241,0.1)' }}>
-              {[
+              {(profile?.impact_metrics || [
                 { label: 'Years Exp', value: '3' },
                 { label: 'Projects', value: '30+' },
                 { label: 'Impact', value: '$2M+' },
-              ].map(({ label, value }) => (
+              ]).slice(0, 3).map(({ label, value }) => (
                 <div key={label} className="p-4 text-center" style={{ borderRight: '1px solid rgba(99,102,241,0.1)' }}>
                   <div className="gradient-text font-bold text-lg">{value}</div>
                   <div style={{ color: '#64748b', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</div>

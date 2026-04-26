@@ -140,7 +140,7 @@ body {
   border: 1px solid rgba(99, 102, 241, 0.12);
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
   transform: translateZ(0);
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
 .glass-card:hover {
@@ -225,13 +225,13 @@ body {
 
 .section-padding {
   padding: 6rem 1.5rem;
-  contain: layout style; /* Prevent layout thrashing between sections */
+  contain: paint layout style; /* Limit repaint areas */
 }
 
 @media (min-width: 768px) {
   .section-padding {
     padding: 8rem 2rem;
-    contain: layout style;
+    contain: paint layout style;
   }
 }
 

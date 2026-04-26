@@ -17,6 +17,18 @@ export const placeholderProfile: Profile = {
   resume_url: '#',
   avatar_url: '',
   calendar_url: 'https://calendly.com',
+  yoe: 3,
+  impact_metrics: [
+    { label: 'Years Exp', value: '3' },
+    { label: 'Projects', value: '30+' },
+    { label: 'Impact', value: '$2M+' },
+  ],
+  philosophy: [
+    { title: 'Simplicity', body: 'The best system is the one that\'s impossible to misuse.' },
+  ],
+  fun_facts: [
+    '🎯 I\'ve reviewed 2,000+ PRs',
+  ],
   updated_at: new Date().toISOString(),
 };
 

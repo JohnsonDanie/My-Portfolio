@@ -44,7 +44,7 @@ export default function SkillsManager() {
 
   const onSubmit = (data: any) => {
     if (editingSkill) {
-      updateSkill({ id: editingSkill.id, skill: data }, { onSuccess: closeModal });
+      updateSkill({ id: editingSkill.id, updates: data }, { onSuccess: closeModal });
     } else {
       createSkill(data, { onSuccess: closeModal });
     }

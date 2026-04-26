@@ -15,6 +15,10 @@ export interface Profile {
   resume_url: string;
   avatar_url: string;
   calendar_url: string;
+  yoe: number;
+  impact_metrics: { label: string; value: string }[];
+  philosophy: { title: string; body: string }[];
+  fun_facts: string[];
   updated_at: string;
 }
 

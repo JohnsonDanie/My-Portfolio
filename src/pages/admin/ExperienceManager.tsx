@@ -63,7 +63,7 @@ export default function ExperienceManager() {
     };
 
     if (editingExp) {
-      updateExperience({ id: editingExp.id, experience: payload }, { onSuccess: closeModal });
+      updateExperience({ id: editingExp.id, updates: payload }, { onSuccess: closeModal });
     } else {
       createExperience(payload, { onSuccess: closeModal });
     }

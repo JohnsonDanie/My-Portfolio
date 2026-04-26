@@ -9,33 +9,7 @@ const tabs = [
   { id: 'fun', label: 'Fun Facts', icon: <Coffee size={15} /> },
 ];
 
-const philosophyPoints = [
-  {
-    title: 'Simplicity is the ultimate sophistication',
-    body: 'The best system is the one that\'s impossible to misuse and trivial to debug at 3AM. I optimise for clarity over cleverness every time.',
-  },
-  {
-    title: 'Measure twice, cut once',
-    body: 'Every architectural decision is a trade-off. I write ADRs, challenge assumptions early, and get alignment before writing a single line.',
-  },
-  {
-    title: 'Own the full stack of impact',
-    body: 'I tie every PR back to a business metric. Code that ships and doesn\'t move the needle is a liability, not an asset.',
-  },
-  {
-    title: 'Observability is not optional',
-    body: 'If you can\'t measure it, you can\'t improve it. I instrument everything before it hits production — logs, traces, metrics.',
-  },
-];
 
-const funFacts = [
-  '🎯 I\'ve reviewed 2,000+ PRs and still learn something new every week',
-  '⚡ I automated my entire dotfiles setup – it takes 4 minutes to onboard a new Mac',
-  '📚 I read one technical book per month and write a summary for my team',
-  '☕ Optimal caffeine timing: coffee at 9:30AM, green tea at 2PM (data-driven)',
-  '🏃 I do my best system design thinking on long runs',
-  '🎸 Ex-guitar player turned distributed systems architect',
-];
 
 export default function AboutSection() {
   const { data: profile } = useProfile();
@@ -102,7 +76,7 @@ export default function AboutSection() {
 
             {activeTab === 'philosophy' && (
               <div className="space-y-4">
-                {philosophyPoints.map((point, i) => (
+                {(profile?.philosophy || []).map((point, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, x: -12 }}
@@ -118,13 +92,16 @@ export default function AboutSection() {
                     </p>
                   </motion.div>
                 ))}
+                {(!profile?.philosophy || profile.philosophy.length === 0) && (
+                   <p className="text-slate-500 italic">No philosophy points added yet.</p>
+                )}
               </div>
             )}
 
             {activeTab === 'fun' && (
               <div className="glass-card rounded-2xl p-8">
                 <ul className="space-y-4">
-                  {funFacts.map((fact, i) => (
+                  {(profile?.fun_facts || []).map((fact, i) => (
                     <motion.li
                       key={i}
                       initial={{ opacity: 0, x: -12 }}
@@ -133,9 +110,13 @@ export default function AboutSection() {
                       className="flex items-start gap-3 text-sm leading-relaxed"
                       style={{ color: '#cbd5e1' }}
                     >
+                      <span className="text-indigo-400 mt-1">▹</span>
                       <span>{fact}</span>
                     </motion.li>
                   ))}
+                  {(!profile?.fun_facts || profile.fun_facts.length === 0) && (
+                    <p className="text-slate-500 italic">No fun facts added yet.</p>
+                  )}
                 </ul>
               </div>
             )}

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '../../hooks';
 import { DataTable } from '../../components/admin/ui/DataTable';
 import { Modal } from '../../components/admin/ui/Modal';
-import { FormInput, FormTextarea, FormSelect } from '../../components/admin/ui/FormInput';
+import { FormInput, FormTextarea } from '../../components/admin/ui/FormInput';
 import { Plus, Edit2, Trash2, Loader2, Link as LinkIcon, ExternalLink, Star } from 'lucide-react';
 import type { Project } from '../../types/database';
 
@@ -48,7 +48,7 @@ export default function ProjectsManager() {
     const payload = { ...data, tech_stack };
 
     if (editingProject) {
-      updateProject({ id: editingProject.id, project: payload }, { onSuccess: closeModal });
+      updateProject({ id: editingProject.id, updates: payload }, { onSuccess: closeModal });
     } else {
       createProject(payload, { onSuccess: closeModal });
     }

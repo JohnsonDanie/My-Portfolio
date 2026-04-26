@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { messagesService } from '../../services/messagesService';
-import { DataTable } from '../../components/admin/ui/DataTable';
 import { Modal } from '../../components/admin/ui/Modal';
 import { Trash2, CheckCircle, Mail, MailOpen } from 'lucide-react';
 import type { ContactMessage } from '../../types/database';
