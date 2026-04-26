@@ -66,12 +66,7 @@ export default function Navigation() {
 
           {/* CTA + Admin */}
           <div className="hidden md:flex items-center gap-3">
-            {user && (
-              <Link to="/admin" className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style={{ color: '#818cf8', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
-                <Settings size={13} /> CMS
-              </Link>
-            )}
+
             <a href="#contact" className="btn-primary py-2 px-4 text-sm">
               <span className="relative z-10">Hire Me</span>
             </a>
@@ -110,13 +105,7 @@ export default function Navigation() {
                   {link.label}
                 </a>
               ))}
-              {user && (
-                <Link to="/admin" onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold mt-2"
-                  style={{ color: '#818cf8', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
-                  <Settings size={15} /> Admin CMS
-                </Link>
-              )}
+
             </div>
           </motion.div>
         )}

@@ -1,17 +1,17 @@
 import { db } from '../lib/firebase';
 import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import type { Testimonial } from '../types/database';
-import { placeholderTestimonials } from '../data/placeholder';
 
 export const testimonialsService = {
   async getAll(): Promise<Testimonial[]> {
-    if (!db) return placeholderTestimonials;
+    if (!db) return [];
     try {
       const q = query(collection(db, 'testimonials'), orderBy('order_index'));
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial));
-    } catch {
-      return placeholderTestimonials;
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+      return [];
     }
   },
 

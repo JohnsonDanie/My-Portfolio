@@ -1,40 +1,42 @@
 import { db } from '../lib/firebase';
 import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore';
 import type { Project } from '../types/database';
-import { placeholderProjects } from '../data/placeholder';
 
 export const projectsService = {
   async getAll(): Promise<Project[]> {
-    if (!db) return placeholderProjects;
+    if (!db) return [];
     try {
       const q = query(collection(db, 'projects'), orderBy('order_index'));
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
-    } catch {
-      return placeholderProjects;
+    } catch (error) {
+      console.error('Error fetching all projects:', error);
+      return [];
     }
   },
 
   async getFeatured(): Promise<Project[]> {
-    if (!db) return placeholderProjects.filter(p => p.featured);
+    if (!db) return [];
     try {
       const q = query(collection(db, 'projects'), where('featured', '==', true), orderBy('order_index'));
       const snapshot = await getDocs(q);
-      if (snapshot.empty) return placeholderProjects.filter(p => p.featured);
+      if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
-    } catch {
-      return placeholderProjects.filter(p => p.featured);
+    } catch (error) {
+      console.error('Error fetching featured projects:', error);
+      return [];
     }
   },
 
   async getBySlug(slug: string): Promise<Project | null> {
-    if (!db) return placeholderProjects.find(p => p.slug === slug) || null;
+    if (!db) return null;
     try {
       const q = query(collection(db, 'projects'), where('slug', '==', slug));
       const snapshot = await getDocs(q);
       if (snapshot.empty) return null;
       return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Project;
-    } catch {
+    } catch (error) {
+      console.error('Error fetching project by slug:', error);
       return null;
     }
   },

@@ -168,13 +168,13 @@ export const useMessages = () =>
 
 export const useSendMessage = () =>
   useMutation({
-    mutationFn: (msg: Omit<ContactMessage, 'id' | 'read' | 'created_at'>) => messagesService.send(msg),
+    mutationFn: (msg: Omit<ContactMessage, 'id' | 'read' | 'created_at'>) => messagesService.create(msg),
   });
 
 export const useMarkMessageRead = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => messagesService.markRead(id),
+    mutationFn: (id: string) => messagesService.markAsRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['messages'] }),
   });
 };

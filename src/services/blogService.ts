@@ -1,40 +1,42 @@
 import { db } from '../lib/firebase';
 import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore';
 import type { BlogPost } from '../types/database';
-import { placeholderBlogPosts } from '../data/placeholder';
 
 export const blogService = {
   async getPublished(): Promise<BlogPost[]> {
-    if (!db) return placeholderBlogPosts.filter(p => p.published);
+    if (!db) return [];
     try {
       const q = query(collection(db, 'blog_posts'), where('published', '==', true), orderBy('created_at', 'desc'));
       const snapshot = await getDocs(q);
-      if (snapshot.empty) return placeholderBlogPosts.filter(p => p.published);
+      if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
-    } catch {
-      return placeholderBlogPosts.filter(p => p.published);
+    } catch (error) {
+      console.error('Error fetching published blog posts:', error);
+      return [];
     }
   },
 
   async getAll(): Promise<BlogPost[]> {
-    if (!db) return placeholderBlogPosts;
+    if (!db) return [];
     try {
       const q = query(collection(db, 'blog_posts'), orderBy('created_at', 'desc'));
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
-    } catch {
-      return placeholderBlogPosts;
+    } catch (error) {
+      console.error('Error fetching all blog posts:', error);
+      return [];
     }
   },
 
   async getBySlug(slug: string): Promise<BlogPost | null> {
-    if (!db) return placeholderBlogPosts.find(p => p.slug === slug) || null;
+    if (!db) return null;
     try {
       const q = query(collection(db, 'blog_posts'), where('slug', '==', slug));
       const snapshot = await getDocs(q);
       if (snapshot.empty) return null;
       return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost;
-    } catch {
+    } catch (error) {
+      console.error('Error fetching blog post by slug:', error);
       return null;
     }
   },

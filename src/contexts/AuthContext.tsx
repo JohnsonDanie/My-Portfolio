@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithMagicLink = async (email: string) => {
     if (!auth) throw new Error('Firebase Auth is not configured. Please add your Firebase credentials to the .env file.');
     const actionCodeSettings = {
-      url: window.location.origin + '/admin',
+      url: window.location.origin + '/admin/login',
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);

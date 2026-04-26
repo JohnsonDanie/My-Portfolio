@@ -88,7 +88,7 @@ export default function AboutSection() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:col-span-3"
+            className="lg:col-span-5"
           >
             {activeTab === 'story' && (
               <div className="glass-card rounded-2xl p-8">
@@ -141,28 +141,7 @@ export default function AboutSection() {
             )}
           </motion.div>
 
-          {/* Right sidebar stats (2/5) */}
-          <div className="lg:col-span-2 space-y-4">
-            {[
-              { label: 'Years of Experience', value: '3', desc: 'Building production software' },
-              { label: 'Systems Designed', value: '5', desc: 'End-to-end, production-ready' },
-              { label: 'Skills', value: '5+', desc: 'Python, React, SQL & more' },
-              { label: 'Open to Work', value: '✓', desc: 'Available for opportunities' },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{ delay: i * 0.08 }}
-                className="glass-card rounded-xl p-5"
-              >
-                <div className="gradient-text text-2xl font-bold">{stat.value}</div>
-                <div className="font-semibold text-sm mt-1" style={{ color: '#e2e8f0' }}>{stat.label}</div>
-                <div style={{ color: '#64748b', fontSize: '0.75rem' }}>{stat.desc}</div>
-              </motion.div>
-            ))}
-          </div>
+
         </div>
       </div>
     </section>

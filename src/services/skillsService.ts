@@ -1,17 +1,17 @@
 import { db } from '../lib/firebase';
 import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import type { Skill } from '../types/database';
-import { placeholderSkills } from '../data/placeholder';
 
 export const skillsService = {
   async getAll(): Promise<Skill[]> {
-    if (!db) return placeholderSkills;
+    if (!db) return [];
     try {
       const q = query(collection(db, 'skills'), orderBy('category'), orderBy('order_index'));
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Skill));
-    } catch {
-      return placeholderSkills;
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+      return [];
     }
   },
 
